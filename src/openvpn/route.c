@@ -3641,7 +3641,7 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
     if (rgi->flags & RGI_IFACE_DEFINED)
     {
         struct ifconf ifc;
-        struct ifreq *ifr;
+        struct ifreq ifr;
         const int bufsize = 4096;
         char *buffer;
 
@@ -3666,23 +3666,37 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
 
         for (cp = buffer; cp <= buffer + ifc.ifc_len - sizeof(struct ifreq); )
         {
-            ifr = (struct ifreq *)cp;
+            /* this is not always using an 8 byte alignment that struct ifr
+             * requires */
+            memcpy(&ifr, cp, sizeof(struct ifreq));
 #if defined(TARGET_SOLARIS)
-            const size_t len = sizeof(ifr->ifr_name) + sizeof(ifr->ifr_addr);
+            const size_t len = sizeof(ifr.ifr_name) + sizeof(ifr.ifr_addr);
 #else
-            const size_t len = sizeof(ifr->ifr_name) + max(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
+            const size_t len = sizeof(ifr.ifr_name) + max(sizeof(ifr.ifr_addr), ifr.ifr_addr.sa_len);
 #endif
 
-            if (!ifr->ifr_addr.sa_family)
+            if (!ifr.ifr_addr.sa_family)
             {
                 break;
             }
-            if (!strncmp(ifr->ifr_name, rgi->iface, IFNAMSIZ))
+            if (!strncmp(ifr.ifr_name, rgi->iface, IFNAMSIZ))
             {
-                if (ifr->ifr_addr.sa_family == AF_LINK)
+                if (ifr.ifr_addr.sa_family == AF_LINK)
                 {
-                    struct sockaddr_dl *sdl = (struct sockaddr_dl *)&ifr->ifr_addr;
-                    memcpy(rgi->hwaddr, LLADDR(sdl), 6);
+                    /* This is a broken member access. struct sockaddr_dl has
+                     * 20 bytes while if_addr has only 16 bytes. So casting if_addr
+                     * to struct sockaddr_dl gives (legitimate) warnings
+                     *
+                     * sockaddr_dl has 12 bytes space for the inrerface name and
+                     * the hw address. So the last 4 that might be part of the
+                     * hw address are not in if_addr, so we need
+                     *
+                     * So we use a memcpy here to avoid the warnings with ASAN
+                     * that we are doing a very nasty cast here
+                     */
+                    struct sockaddr_dl sdl = { 0 };
+                    memcpy(&sdl, cp + offsetof(struct ifreq, ifr_addr), sizeof(sdl));
+                    memcpy(rgi->hwaddr, LLADDR(&sdl), 6);
                     rgi->flags |= RGI_HWADDR_DEFINED;
                 }
             }
