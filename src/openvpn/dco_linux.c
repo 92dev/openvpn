@@ -81,6 +81,13 @@ resolve_ovpn_netlink_id(int msglevel)
     int ret;
     struct nl_sock *nl_sock = nl_socket_alloc();
 
+    if (!nl_sock)
+    {
+        msg(msglevel, "Allocating net link socket failed");
+        ret = -1;
+        goto err_sock;
+    }
+
     ret = genl_connect(nl_sock);
     if (ret)
     {
