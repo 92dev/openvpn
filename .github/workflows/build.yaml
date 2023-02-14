@@ -259,7 +259,7 @@ jobs:
       - name: autoconf
         run: autoreconf -fvi
       - name: configure
-        run: CFLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all  -fno-omit-frame-pointer -O2" CC=clang ./configure --with-crypto-library=${{matrix.ssllib}}
+        run: CFLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all  -fno-omit-frame-pointer -O2" CC=clang ./configure --with-crypto-library=${{matrix.ssllib}} --enable-werror
       - name: make all
         run: make -j3
       - name: make check
@@ -308,7 +308,7 @@ jobs:
       - name: autoconf
         run: autoreconf -fvi
       - name: configure
-        run: ./configure --enable-werror ${{matrix.configureflags}} ${{matrix.configuressllib}}
+        run: ./configure --enable-werror ${{matrix.configureflags}} ${{matrix.configuressllib}} --enable-werror
       - name: make all
         run: make -j4
       - name: make check
@@ -428,7 +428,7 @@ jobs:
       - name: autoconf
         run: autoreconf -fvi
       - name: configure
-        run: ./configure --with-crypto-library=openssl ${{matrix.configureflags}}
+        run: ./configure --with-crypto-library=openssl ${{matrix.configureflags}} --enable-werror
       - name: make all
         run: make -j3
       - name: make check
