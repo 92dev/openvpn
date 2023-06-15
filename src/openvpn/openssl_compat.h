@@ -117,6 +117,7 @@ EVP_MD_CTX_new(void)
 #define EVP_CIPHER_CTX_reset EVP_CIPHER_CTX_init
 #define X509_get0_notBefore X509_get_notBefore
 #define X509_get0_notAfter X509_get_notAfter
+#define SSL_get_peer_tmp_key SSL_get_server_tmp_key
 
 /**
  * Reset a HMAC context
