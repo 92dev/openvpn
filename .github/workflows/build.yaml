@@ -98,6 +98,9 @@ jobs:
       - name: Run ${{ matrix.test }} unit test
         run: ./unittests/test_${{ matrix.test }}.exe
 
+      - name: Run reflect unit test
+        run: ./unittests/test_reflect.exe
+
   ubuntu:
     strategy:
       fail-fast: false

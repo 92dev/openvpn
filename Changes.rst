@@ -1,5 +1,16 @@
 Overview of changes in 2.7
 ==========================
+New features
+------------
+Bloom filter based reflection protection
+    To avoid the limitation of ``--connect-freq-initial`` to block legimitate
+    clients when an OpenVPN server is tried to be used in a reflection attack,
+    the new ``--connect-freq-initial-bloom-limit`` can impose limit on a
+    per-subnet basis. See the manual for more details. Note: this option
+    requires 2MB of extra memory in the default configuration.
+
+Deprecated features
+-------------------
 ``secret`` support has been removed by default.
     static key mode (non-TLS) is no longer considered "good and secure enough"
     for today's requirements.  Use TLS mode instead.  If deploying a PKI CA

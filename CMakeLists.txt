@@ -320,6 +320,7 @@ set(SOURCE_FILES
     src/openvpn/basic.h
     src/openvpn/block_dns.h
     src/openvpn/block_dns.c
+    src/openvpn/bloom.c
     src/openvpn/buffer.c
     src/openvpn/buffer.h
     src/openvpn/circ_list.h
@@ -462,6 +463,8 @@ set(SOURCE_FILES
     src/openvpn/shaper.h
     src/openvpn/sig.c
     src/openvpn/sig.h
+    src/openvpn/siphash.h
+    src/openvpn/siphash_reference.c
     src/openvpn/socket.c
     src/openvpn/socket.h
     src/openvpn/socks.c
@@ -558,6 +561,7 @@ if (BUILD_TESTING)
         "test_packet_id"
         "test_pkt"
         "test_provider"
+        "test_reflect"
         )
 
     if (WIN32)
@@ -684,6 +688,19 @@ if (BUILD_TESTING)
         src/openvpn/packet_id.c
         src/openvpn/reliable.c
         src/openvpn/session_id.c
+        )
+
+    target_sources(test_reflect PRIVATE
+        src/openvpn/bloom.c
+        src/openvpn/reflect_filter.c
+        src/openvpn/reflect_filter.h
+        src/openvpn/siphash.h
+        src/openvpn/siphash_reference.c
+        src/openvpn/otime.c
+        src/openvpn/crypto_mbedtls.c
+        src/openvpn/crypto_openssl.c
+        src/openvpn/crypto.c
+        src/openvpn/packet_id.c
         )
 
     target_sources(test_pkt PRIVATE
