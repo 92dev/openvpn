@@ -2146,6 +2146,17 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
     EVP_PKEY_free(pkey);
 }
 
+#if defined(ENABLE_CRYPTO_WOLFSSL)
+/* wolfSSL does not implement these APIs */
+static void
+print_peer_signature(SSL *ssl, char *buf, size_t buflen)
+{
+}
+static void
+print_server_tempkey(SSL *ssl, char *buf, size_t buflen)
+{
+}
+#else  /* if defined(ENABLE_CRYPTO_WOLFSSL) */
 static void
 print_server_tempkey(SSL *ssl, char *buf, size_t buflen)
 {
@@ -2236,6 +2247,7 @@ print_peer_signature(SSL *ssl, char *buf, size_t buflen)
     openvpn_snprintf(buf, buflen, ", peer signing digest/type: %s %s",
                      peer_sig, peer_sig_type);
 }
+#endif /* if defined(ENABLE_CRYPTO_WOLFSSL) */
 
 
 
